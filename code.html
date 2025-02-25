@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tax Assistant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fad0c4, #ffdde1);
+            background-size: 400% 400%;
+            animation: gradientBG 10s ease infinite;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .container {
+            max-width: 500px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        input, button {
+            margin-top: 10px;
+            padding: 10px;
+            width: 100%;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        h2 {
+            color: #333;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #007bff;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>AI Tax Assistant</h2>
+        <label for="income">Enter Your Annual Income:</label>
+        <input type="number" id="income" placeholder="Enter income in INR">
+        <button onclick="calculateTax()">Calculate Tax</button>
+        <h3 id="result"></h3>
+    </div>
+
+    <script>
+        function calculateTax() {
+            let income = document.getElementById("income").value;
+            let { tax, deductions } = computeTax(parseInt(income));
+            document.getElementById("result").innerText = `Your Tax: ₹${tax}\nDeductions Applied: ₹${deductions}`;
+        }
+
+        function computeTax(income) {
+            let taxSlabs = [
+                { limit: 250000, rate: 0.05 },
+                { limit: 500000, rate: 0.10 },
+                { limit: 1000000, rate: 0.20 },
+                { limit: 1500000, rate: 0.30 }
+            ];
+            
+            let deductions = Math.min(50000, income * 0.05); // Example deduction logic
+            let taxableIncome = Math.max(0, income - deductions);
+            let tax = 0, prevLimit = 0;
+
+            for (let slab of taxSlabs) {
+                if (taxableIncome > slab.limit) {
+                    tax += (slab.limit - prevLimit) * slab.rate;
+                    prevLimit = slab.limit;
+                } else {
+                    tax += (taxableIncome - prevLimit) * slab.rate;
+                    break;
+                }
+            }
+            return { tax: tax.toFixed(2), deductions: deductions.toFixed(2) };
+        }
+    </script>
+</body>
+</html>
